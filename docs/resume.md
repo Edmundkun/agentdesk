@@ -23,7 +23,7 @@
 - 独立完成前后端分离的企业知识库系统：Spring Boot 3 + MyBatis-Plus + MySQL 提供 JWT 鉴权、文档管理、会话与消息持久化，Vue 3 + TypeScript + Element Plus 实现聊天工作台与知识库管理，**39 个单元测试全部通过**。
 - **自研轻量 ReAct Agent 执行器**：抽象 `Tool` 接口与注册表，内置知识库检索、计算器、时间、统计 4 个工具；实现「Prompt 构造 → Action 解析 → 工具调用 → Observation 回填 → Final Answer」推理循环，支持最多 5 轮推理、工具异常降级与重复调用熔断。
 - 设计 **RAG 检索链路**：PDFBox 解析 txt/md/pdf，按句子边界切片（320 字 / 重叠 60），384 维哈希向量落库；检索采用**向量余弦 + 关键词 IDF 覆盖率**加权排序，配合 Caffeine 缓存，回答附带来源与相关度。
-- 基于 **SSE** 实现流式对话（`meta / step / token / done / error` 五类事件），推理线程池与请求线程隔离；前端实时渲染 Agent 思考轨迹与增量答案，支持中断生成，首字延迟约 **300ms**（本地实测）。
+- 基于 **SSE** 实现流式对话（`meta / step / token / done / error` 五类事件），推理线程池与请求线程隔离；前端实时渲染 Agent 思考轨迹与增量答案，支持中断生成，本地规则模型下首个 token 约 **30ms**、单次回答约 **0.3~0.9s**。
 
 ### 版本 B：投 Agent 开发岗（突出 Agent / RAG）
 
@@ -50,8 +50,8 @@
 | 单元测试数量 | `mvnw.cmd test` 输出 | 39 个，0 失败 |
 | 接口数量 | Swagger / `docs/api.md` | 13 个 REST + 1 个 SSE |
 | 内置工具数 | `ToolRegistry` 启动日志或代码 | 4 个 |
-| 首字延迟 | 浏览器 Network → SSE 首帧时间 | 约 250~350ms（mock） |
-| 单次对话耗时 | `done` 事件 `durationMs` | 约 1.5~2.5s（含逐字输出） |
+| 首字延迟 | 浏览器 Network → SSE 首帧时间 | 约 30ms（mock） |
+| 单次对话耗时 | `done` 事件 `durationMs` | 约 0.3~0.9s（含逐字输出） |
 | 文档入库耗时 | 应用日志 `文档入库完成` | 3 份文档共 13 切片，约 60ms |
 | 检索 Top-4 命中率 | 自建 20 题评测集人工标注 | 建议实测后写，如 85% |
 
